@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>VICOIN</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070707;--card:#151517;--card2:#1e1e21;--line:#2a2a2e;--gold:#d4a84b;--gold2:#f1d58a;--tx:#f2efe8;--mu:#8e8b84;--ok:#7fcf9a;
+--ff:'Manrope',system-ui,sans-serif;--fd:'Unbounded','Manrope',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;min-height:100%;min-height:100dvh;background:var(--bg);color:var(--tx);font-family:var(--ff)}
+body{display:flex;justify-content:center;margin:0;overflow:hidden}
+#app{width:100%;max-width:480px;height:100%;height:100dvh;display:flex;flex-direction:column;position:relative;padding-top:env(safe-area-inset-top,0px);background:radial-gradient(120% 40% at 50% 0%,#1d1708 0%,var(--bg) 70%);overflow:hidden}
+body.tg #app{max-width:none}
+main{flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;-webkit-overflow-scrolling:touch}
+.page{display:none}.page.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;box-shadow:0 0 18px #d4a84b44;background:#000}
+.hi small{display:block;color:var(--mu);font-size:12px}.hi b{font-size:16px}
+.bal{text-align:center;padding:22px 12px 20px;border-radius:22px;background:linear-gradient(160deg,#211a0a,#121214 60%);border:1px solid #3a2f14;margin-bottom:12px}
+.bal span{color:var(--mu);font-size:13px}
+.bal h1{font-family:var(--fd);font-weight:700;font-size:38px;margin:6px 0 2px;color:var(--gold2);letter-spacing:-.5px}
+.bal i{font-style:normal;color:var(--gold);font-family:var(--fd);font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.st span{color:var(--mu);font-size:12px;display:block;margin-bottom:6px}
+.st b{font-family:var(--fd);font-size:16px;font-weight:500}
+.coll{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:13px;color:var(--mu)}
+.row b{color:var(--tx);font-family:var(--fd);font-weight:500;font-size:15px}
+.bar{height:6px;border-radius:3px;background:var(--card2);overflow:hidden;margin-bottom:14px}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s}
+button{font:inherit;border:0;cursor:pointer;color:inherit}
+.btn{width:100%;padding:15px;border-radius:14px;font-weight:800;font-size:15px;color:#1a1305;background:linear-gradient(180deg,var(--gold2),var(--gold));transition:transform .1s,opacity .2s}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.35;cursor:default}
+.btn.sm{width:auto;padding:9px 14px;font-size:13px;border-radius:11px}
+.btn.ghost{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
+h2{font-size:15px;font-weight:800;margin:0 0 10px}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.ic{width:46px;height:46px;border-radius:13px;background:var(--card2);display:grid;place-items:center;flex:none;color:var(--gold)}
+.ic svg{width:24px;height:24px}
+.info{flex:1;min-width:0}.info b{display:block;font-size:14px}
+.info small{color:var(--mu);font-size:12px;line-height:1.35;display:block}
+.lvl{color:var(--gold);font-weight:600}
+.empty{text-align:center;color:var(--mu);font-size:13px;padding:22px 14px;border:1px dashed var(--line);border-radius:16px;line-height:1.5}
+.empty .btn{margin-top:12px}
+nav{display:flex;flex-shrink:0;border-top:1px solid var(--line);background:#0c0c0d;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));position:relative;z-index:50}
+nav button{flex:1;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;font-size:11px;font-weight:600;color:var(--mu);border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+nav button svg{width:22px;height:22px;pointer-events:none}
+nav button.on{color:var(--gold)}
+button.btn,button.btn.sm{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#toast{position:absolute;left:16px;right:16px;bottom:88px;background:#26220f;border:1px solid #4a3c14;color:var(--gold2);padding:12px 14px;border-radius:14px;font-size:13px;text-align:center;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:100}
+#toast.on{opacity:1;transform:none}
+.note{color:var(--mu);font-size:12px;text-align:center;margin-top:16px;line-height:1.5}
+.tapc{display:flex;flex-direction:column;align-items:center;margin-bottom:14px}
+#coin{width:180px;height:180px;border-radius:50%;border:3px solid var(--gold);background:radial-gradient(circle at 35% 30%,#2b220c,#050505 70%);display:grid;place-items:center;box-shadow:0 0 40px #d4a84b33;touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:transform .08s;position:relative}
+#coin:active{transform:scale(.95)}
+#coin svg{width:90px;height:90px;pointer-events:none}
+.en{width:100%;margin-top:14px}.en .row{margin-bottom:6px}
+.fl{position:absolute;pointer-events:none;color:var(--gold2);font-family:var(--fd);font-size:20px;animation:fl .8s forwards}
+@keyframes fl{to{transform:translateY(-70px);opacity:0}}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px}
+.day{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 0;text-align:center;font-size:10px;color:var(--mu)}
+.day b{display:block;color:var(--tx);font-size:10px;margin-top:3px}
+.day.d{border-color:var(--gold);color:var(--gold)}
+.link{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;word-break:break-all;margin:10px 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#coin svg,.logo svg{stroke:var(--gold)}
+#coin{box-shadow:0 0 40px color-mix(in srgb,var(--gold) 22%,transparent)}
+.sec{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:16px 0 8px}
+.tag{display:inline-block;font-size:10px;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+.sw{width:46px;height:46px;border-radius:13px;flex:none;border:2px solid var(--line)}
+@media (min-width:601px) and (max-width:900px){
+ body{background:#000;align-items:center}
+ #app{height:calc(100vh - 24px);width:auto;aspect-ratio:9/16;max-width:calc(100vw - 24px);border-radius:26px;overflow:hidden;border:1px solid #3a2f14;box-shadow:0 0 80px color-mix(in srgb,var(--gold) 14%,transparent)}
+ main::-webkit-scrollbar{width:0}
+}
+
+@media (min-width:901px){
+ body{background:#000;align-items:center}
+ #app{flex-direction:row;width:min(calc(100vw - 24px),calc((100vh - 24px)*16/9));height:auto;max-width:none;aspect-ratio:16/9;border-radius:26px;overflow:hidden;border:1px solid #3a2f14;box-shadow:0 0 80px color-mix(in srgb,var(--gold) 14%,transparent);padding-top:0}
+ nav{order:-1;flex-direction:column;justify-content:flex-start;gap:4px;width:116px;flex:none;border-top:0;border-right:1px solid var(--line);padding:18px 8px}
+ nav button{flex:none;padding:12px 0;font-size:12px}
+ nav button svg{width:24px;height:24px}
+ main{min-width:0;min-height:0;padding:22px 28px}
+ main::-webkit-scrollbar{width:0}
+ #p-home.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:start}
+ #coin{width:min(200px,26vh);height:min(200px,26vh)}
+ #catalog,#shop{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;align-items:stretch}
+ #catalog .item,#shop .item{margin:0}
+ #shop .sec{grid-column:1/-1}
+ #p-earn,#p-top{max-width:680px;margin:0 auto}
+ #toast{bottom:24px;left:auto;right:auto;width:360px;align-self:center}
+ #app #toast{left:calc(50% + 58px);transform:translate(-50%,8px)}
+ #app #toast.on{transform:translate(-50%,0)}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+ <section class="page on" id="p-home">
+  <div class="colL">
+  <div class="top">
+   <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d4a84b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5l8 15 8-15"/><path d="M2.5 10c4-3 15-4 19-1" stroke-width="1.4"/></svg></div>
+   <div class="hi"><small id="greet">Добро пожаловать</small><b id="uname">VIFE_KK</b></div>
+  </div>
+  <div class="bal"><span>Ваш баланс</span><h1 id="bal">0</h1><i>VIC</i></div>
+  <div class="tapc"><div id="coin" role="button" aria-label="Тап"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a84b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5l8 15 8-15"/><path d="M2.5 10c4-3 15-4 19-1" stroke-width="1.2"/></svg></div>
+  <div class="en"><div class="row"><span>Энергия</span><b id="enT"></b></div><div class="bar"><div id="enF"></div></div></div></div>
+  </div>
+  <div class="colR">
+  <div class="grid">
+   <div class="st"><span>Стоимость бизнеса</span><b id="worth">0</b></div>
+   <div class="st"><span>Доход в час</span><b id="inc">0</b></div>
+   <div class="st"><span>Предприятий</span><b id="cnt">0</b></div>
+   <div class="st"><span>Всего заработано</span><b id="earned">0</b></div>
+  </div>
+  <div class="coll">
+   <div class="row"><span>Накоплено</span><b id="acc">0 VIC</b></div>
+   <div class="bar"><div id="fill"></div></div>
+   <div class="row" style="margin-bottom:14px"><span id="capTxt">Хранилище: 12 ч</span><span id="full"></span></div>
+   <button class="btn" id="collect">Забрать доход</button>
+   <button class="btn ghost" id="capUp" style="margin-top:8px"></button>
+  </div>
+  <h2>Мои предприятия</h2>
+  <div id="mine"></div>
+  </div>
+ </section>
+
+ <section class="page" id="p-biz">
+  <h2 style="font-size:20px;margin-bottom:4px">Бизнес</h2>
+  <p style="color:var(--mu);font-size:13px;margin-bottom:14px">Покупайте предприятия и улучшайте их. Каждая следующая копия дороже на 15%.</p>
+  <div id="catalog"></div>
+ </section>
+
+ <section class="page" id="p-top">
+  <h2 style="font-size:20px;margin-bottom:4px">Топ игроков</h2>
+  <p style="color:var(--mu);font-size:13px;margin-bottom:14px">По всему заработанному VIC. «Написать» — сообщение в Telegram за <b style="color:var(--gold)">500 000 VIC</b>.</p>
+  <div id="lb"></div>
+ </section>
+ <section class="page" id="p-earn">
+  <h2 style="font-size:20px;margin-bottom:14px">Заработок</h2>
+  <h2>Ежедневная награда</h2>
+  <div class="days" id="days"></div>
+  <button class="btn" id="dbtn" onclick="claimDaily()" style="margin-bottom:18px"></button>
+  <h2>Друзья</h2>
+  <p style="color:var(--mu);font-size:13px;margin-bottom:10px">Приглашай друзей — оба получите +5 000 VIC.</p>
+  <div class="st"><span>Ваша ссылка</span><div class="link" id="ref"></div><button class="btn" id="copy" style="margin-top:10px">Скопировать ссылку</button></div>
+  <div class="empty" style="margin:12px 0 18px">Пока никого не приглашено.</div>
+  <h2>Задания спонсоров</h2>
+  <div id="sp"></div>
+  <p class="note" style="margin:0 0 18px;text-align:left">Подпишись на каналы спонсоров и забери бонус.</p>
+  <h2>Обычные задания</h2>
+  <div id="pg"></div>
+ </section>
+ <section class="page" id="p-shop">
+  <h2 style="font-size:20px;margin-bottom:4px">Магазин</h2>
+  <p style="color:var(--mu);font-size:13px;margin-bottom:14px">Пропуски времени, VIC за Stars, улучшения и скины.</p>
+  <div id="shop"></div>
+ </section>
+ <section class="page" id="p-soon">
+  <div class="empty" style="margin-top:40px"><b id="soonT" style="display:block;color:var(--tx);font-size:16px;margin-bottom:6px"></b>Раздел скоро появится.</div>
+ </section>
+</main>
+<div id="toast"></div>
+<nav id="nav"></nav>
+</div>
+
+<script>
+const IC={
+coffee:'<path d="M5 8h11v5a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5zM16 9h2a2 2 0 0 1 0 5h-2M8 3v2M12 3v2"/>',
+shop:'<path d="M4 9l1.5-5h13L20 9M4 9v10h16V9M4 9a3 3 0 0 0 5 0 3 3 0 0 0 6 0 3 3 0 0 0 5 0"/>',
+car:'<path d="M5 16l1.5-5.5A2 2 0 0 1 8.4 9h7.2a2 2 0 0 1 1.9 1.5L19 16M4 16h16v3H4zM7 19v1M17 19v1M8 3c0 1.5-1 1.5-1 3M12 3c0 1.5-1 1.5-1 3"/>',
+food:'<path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v5M9 3v5M17 21V3c-2 1-3 4-3 8h3"/>',
+hotel:'<path d="M3 20V8M3 14h18v6M21 14v-2a3 3 0 0 0-3-3h-7v5M7 11.5h.01"/>',
+fact:'<path d="M3 20V9l6 4V9l6 4V5h3v15zM7 20v-3M12 20v-3"/>',
+mall:'<path d="M4 20V8l8-5 8 5v12zM9 20v-6h6v6M8 10h.01M12 10h.01M16 10h.01"/>',
+oil:'<path d="M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.500 9 7 12 3zM9.500 13a2.500 2.500 0 0 0 2.500 2.500"/>',
+plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+bank:'<path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>',
+tech:'<path d="M4 6h16v12H4zM8 6V4h8v2M9 12h6M12 9v6"/>',
+energy:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+space:'<path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9zM12 8v4l3 3"/>',
+empire:'<path d="M12 2L4 6v4c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4zM12 11v4M9 13h6"/>'};
+const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+const CFG={start:50000,capHours:12,growth:1.15,lvlBonus:0.25,upMul:0.6};
+const BIZ=[
+{id:'coffee',n:'Кофейня',i:'coffee',p:500,r:1000,d:'Небольшая точка с постоянными гостями.'},
+{id:'shop',n:'Продуктовый магазин',i:'shop',p:2000,r:4250,d:'Товары первой необходимости рядом с домом.'},
+{id:'wash',n:'Автомойка',i:'car',p:6000,r:13500,d:'Стабильный поток клиентов весь день.'},
+{id:'rest',n:'Ресторан',i:'food',p:18000,r:42500,d:'Кухня, зал и вечерние бронирования.'},
+{id:'hotel',n:'Отель',i:'hotel',p:60000,r:145000,d:'Номера и сервис для гостей города.'},
+{id:'plant',n:'Завод',i:'fact',p:200000,r:512500,d:'Собственное производство и поставки.'},
+{id:'mall',n:'Торговый центр',i:'mall',p:700000,r:1875000,d:'Десятки арендаторов под одной крышей.'},
+{id:'oil',n:'Нефтяная компания',i:'oil',p:2500000,r:7250000,d:'Крупнейший источник дохода в игре.'},
+{id:'plane',n:'Авиакомпания',i:'plane',p:85000000000,r:320000000000,d:'Свои самолёты и маршруты по всему миру.'},
+{id:'bank',n:'Банк',i:'bank',p:380000000000,r:1450000000000,d:'Кредиты, вклады и комиссии 24/7.'},
+{id:'tech',n:'IT-холдинг',i:'tech',p:1600000000000,r:6200000000000,d:'Софт, облака и цифровые сервисы.'},
+{id:'energy',n:'Энергохолдинг',i:'energy',p:7500000000000,r:29000000000000,d:'Электростанции и сети по стране.'},
+{id:'space',n:'Космическая корпорация',i:'space',p:35000000000000,r:140000000000000,d:'Спутники, запуски и орбитальная инфраструктура.'},
+{id:'empire',n:'Империя',i:'empire',p:180000000000000,r:750000000000000,d:'Вершина. Контроль над всем рынком.'}];
+const KEY='vicoin_tg_v1';
+let S=JSON.parse(localStorage.getItem(KEY)||'null')||{bal:CFG.start,earned:0,last:Date.now(),own:{}};
+S.en??=1000;S.enT??=Date.now();S.dl??={s:0,last:-1};S.tk??={};S.uid??=Math.random().toString(36).slice(2,8);
+S.maxEn??=1000;S.tap??=5;S.mul??=1;S.enLv??=0;S.tapLv??=0;S.mulLv??=0;
+S.skin??='gold';S.skins??={gold:1};S.auto??=0;S.tu??=0;S.mega??=0;S.ul??={};S.cn??={};S.title??='Предприниматель';S.titles??={};S.cl??=0;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.floor(n).toLocaleString('ru-RU');
+const capH=()=>CFG.capHours+(S.cl||0)*2;
+const capCost=()=>Math.round(5000000*Math.pow(1.25,S.cl||0));
+const cost=b=>{const o=S.own[b.id];return Math.round(b.p*Math.pow(CFG.growth,o?o.c:0))};
+const upCost=b=>{const o=S.own[b.id];return Math.round(b.p*CFG.upMul*o.l*(o.c))};
+const rate=b=>{const o=S.own[b.id];return o?b.r*o.c*(1+CFG.lvlBonus*(o.l-1))*(S.mul||1):0};
+const hourly=()=>BIZ.reduce((s,b)=>s+rate(b),0);
+const worth=()=>BIZ.reduce((s,b)=>{const o=S.own[b.id];if(!o)return s;let t=0;for(let k=0;k<o.c;k++)t+=Math.round(b.p*Math.pow(CFG.growth,k));return s+t},0);
+const acc=()=>{const h=Math.min((Date.now()-S.last)/36e5,capH());return hourly()*h};
+let tt;const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1800)};
+
+function render(){
+ $('bal').textContent=fmt(S.bal);$('worth').textContent=fmt(worth());$('inc').textContent=fmt(hourly());
+ $('cnt').textContent=Object.values(S.own).reduce((s,o)=>s+o.c,0);$('earned').textContent=fmt(S.earned);
+ $('capTxt').textContent='Хранилище: '+capH()+' ч';
+ const m=BIZ.filter(b=>S.own[b.id]);
+ $('mine').innerHTML=m.length?m.map(b=>{const o=S.own[b.id];return `<div class="item"><div class="ic">${ico(b.i)}</div><div class="info"><b>${b.n}</b><small>×${o.c} · <span class="lvl">ур. ${o.l}</span> · ${fmt(rate(b))} VIC/ч</small></div></div>`}).join(''):
+ `<div class="empty">У вас пока нет предприятий. Купите первое — кофейня окупится примерно за 12 часов.<button class="btn sm" onclick="go('biz')">Открыть каталог</button></div>`;
+ $('catalog').innerHTML=BIZ.map(b=>{const o=S.own[b.id],c=cost(b);
+  return `<div class="item"><div class="ic">${ico(b.i)}</div><div class="info"><b>${b.n}</b><small>${b.d}</small><small>${fmt(b.r)} VIC/ч${o?` · куплено ${o.c} · <span class="lvl">ур. ${o.l}</span>`:''}</small></div>
+  <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">
+  <button class="btn sm" ${S.bal<c?'disabled':''} onclick="buy('${b.id}')">${fmt(c)}</button>
+  ${o?`<button class="btn sm ghost" ${S.bal<upCost(b)?'disabled':''} onclick="up('${b.id}')">Улучшить ${fmt(upCost(b))}</button>`:''}</div></div>`}).join('');
+ tick();
+}
+function tick(){
+ const a=acc(),cap=hourly()*capH();
+ $('acc').textContent=fmt(a)+' VIC';$('fill').style.width=cap?Math.min(a/cap*100,100)+'%':'0%';
+ $('full').textContent=cap&&a>=cap?'Хранилище заполнено':'';$('collect').disabled=a<1;
+}
+function collect(){const a=Math.floor(acc());if(a<1)return;S.bal+=a;S.earned+=a;S.last=Date.now();save();render();toast('Получено +'+fmt(a)+' VIC')}
+function settle(){const a=Math.floor(acc());S.bal+=a;S.earned+=a;S.last=Date.now()} // сохраняем накопленное перед сменой дохода
+function buy(id){const b=BIZ.find(x=>x.id===id),c=cost(b);if(S.bal<c)return toast('Не хватает VIC');
+ settle();S.bal-=c;(S.own[id]=S.own[id]||{c:0,l:1}).c++;save();render();toast('Куплено: '+b.n)}
+function up(id){const b=BIZ.find(x=>x.id===id),c=upCost(b);if(S.bal<c)return toast('Не хватает VIC');
+ settle();S.bal-=c;S.own[id].l++;save();render();toast(b.n+': уровень '+S.own[id].l)}
+$('collect').onclick=collect;
+
+const NAV=[
+ ['home','Главная','<path d="M4 11l8-7 8 7v9H4z"/>'],
+ ['biz','Бизнес','<path d="M4 8h16v11H4zM9 8V5h6v3"/>'],
+ ['earn','Заработок','<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>'],
+ ['shop','Магазин','<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>'],
+ ['top','Топ','<path d="M8 4h8v6a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>']
+];
+function go(k){
+ try{
+  const page=['home','biz','shop','top','earn'].includes(k)?'p-'+k:'p-soon';
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===page));
+  if(page==='p-soon' && $('soonT'))$('soonT').textContent=k;
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+  const main=document.querySelector('main'); if(main) main.scrollTop=0;
+  if(typeof render==='function') render();
+ }catch(e){console.error('go',e)}
+}
+$('nav').innerHTML=NAV.map(([k,t,p])=>`<button type="button" data-k="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>${t}</button>`).join('');
+$('nav').onclick=e=>{
+ const btn=e.target.closest('button[data-k]');
+ if(btn){e.preventDefault();go(btn.dataset.k)}
+};
+const h=new Date().getHours();$('greet').textContent=h<6?'Доброй ночи':h<12?'Доброе утро':h<18?'Добрый день':'Добрый вечер';
+IC.gift='<path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7c-1-3-5-3-5-1s3 1 5 1zM12 7c1-3 5-3 5-1s-3 1-5 1z"/>';
+IC.chan='<path d="M21 4L3 11l6 2 2 6 3-4 4 3z"/>';
+const REGEN=3;const tapVal=()=>S.tap*(Date.now()<(S.tu||0)?5:1);
+const curEn=()=>Math.min(S.maxEn,S.en+(Date.now()-S.enT)/1000*REGEN);
+function updTap(){const e=curEn();$('enT').textContent=Math.floor(e)+' / '+S.maxEn;$('enF').style.width=e/S.maxEn*100+'%'}
+$('coin').addEventListener('pointerdown',ev=>{const e=curEn();if(e<1)return toast('Нет энергии. Она восстанавливается сама');
+ S.en=e-1;S.enT=Date.now();const tv=tapVal();S.bal+=tv;S.earned+=tv;
+ const f=document.createElement('span');f.className='fl';f.textContent='+'+fmt(tv);const r=$('coin').getBoundingClientRect();f.style.left=(ev.clientX-r.left-10)+'px';f.style.top=(ev.clientY-r.top-20)+'px';$('coin').appendChild(f);setTimeout(()=>f.remove(),800);
+ $('bal').textContent=fmt(S.bal);$('earned').textContent=fmt(S.earned);updTap();save()});
+const DAILY=[1000,2000,3000,5000,8000,12000,20000];
+const dn=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+function cyc(){const d=S.dl;return d.last===dn()?((d.s-1)%7)+1:(d.last===dn()-1?d.s%7:0)}
+function claimDaily(){const d=S.dl,n=dn();if(d.last===n)return;d.s=d.last===n-1?d.s+1:1;d.last=n;const r=DAILY[(d.s-1)%7];S.bal+=r;S.earned+=r;save();render();toast('Ежедневная награда +'+fmt(r)+' VIC')}
+const SP=[{id:'s1',n:'Канал спонсора 1',url:'https://t.me/',r:3000},{id:'s2',n:'Канал спонсора 2',url:'https://t.me/',r:3000},{id:'s3',n:'Канал спонсора 3',url:'https://t.me/',r:5000}];
+const PG=[{id:'g1',n:'Купить первое предприятие',r:2000,ok:()=>Object.keys(S.own).length>0},{id:'g2',n:'Заработать 100 000 VIC',r:5000,ok:()=>S.earned>=1e5}];
+function openSp(id){const s=SP.find(x=>x.id===id);window.open(s.url,'_blank');S.tk[id]={t:Date.now()};save();render()}
+function chkSp(id){const s=SP.find(x=>x.id===id),o=S.tk[id];if(Date.now()-o.t<8000)return toast('Подпишитесь на канал и вернитесь');S.tk[id]='done';S.bal+=s.r;S.earned+=s.r;save();render();toast('Бонус спонсора +'+fmt(s.r)+' VIC')}
+function claimG(id){const g=PG.find(x=>x.id===id);if(!g.ok()||S.tk[id]==='done')return;S.tk[id]='done';S.bal+=g.r;S.earned+=g.r;save();render();toast('+'+fmt(g.r)+' VIC')}
+function renderX(){
+ const n=cyc(),can=S.dl.last!==dn();
+ $('days').innerHTML=DAILY.map((r,i)=>`<div class="day ${i<n?'d':''}">День ${i+1}<b>${fmt(r)}</b></div>`).join('');
+ $('dbtn').disabled=!can;$('dbtn').textContent=can?'Забрать награду':'Награда получена, приходите завтра';
+ $('sp').innerHTML=SP.map(s=>{const o=S.tk[s.id];const b=o==='done'?`<button class="btn sm ghost" disabled>Выполнено</button>`:o?`<button class="btn sm" onclick="chkSp('${s.id}')">Проверить</button>`:`<button class="btn sm" onclick="openSp('${s.id}')">Подписаться</button>`;
+  return `<div class="item"><div class="ic">${ico('chan')}</div><div class="info"><b>${s.n}</b><small>Подписка на канал · +${fmt(s.r)} VIC</small></div>${b}</div>`}).join('');
+ $('pg').innerHTML=PG.map(g=>{const d=S.tk[g.id]==='done',ok=g.ok(),off=d||!ok;return `<div class="item"><div class="ic">${ico('gift')}</div><div class="info"><b>${g.n}</b><small>+${fmt(g.r)} VIC</small></div><button class="btn sm ${off?'ghost':''}" ${off?'disabled':''} onclick="claimG('${g.id}')">${d?'Выполнено':ok?'Забрать':'В процессе'}</button></div>`}).join('');
+ $('ref').textContent='https://t.me/VICOIN_bot?startapp=ref_'+S.uid;
+ // name, earned, tg username (без @) или ''
+ const meName=S.title||'Вы';
+ const meTg=(S.tgUser||'').replace(/^@/,'');
+ const L=[
+  {n:'Алишер',e:12400000,tg:'alisher_vic'},
+  {n:'Madina',e:8900000,tg:'madina_uz'},
+  {n:'Timur_K',e:5100000,tg:'timur_k'},
+  {n:'Sardor',e:2300000,tg:'sardor'},
+  {n:'Nigora',e:950000,tg:'nigora'},
+  {n:meName,e:S.earned,tg:meTg,me:1}
+ ].sort((a,b)=>b.e-a.e);
+ const MSG_COST=500000;
+ $('lb').innerHTML=L.map((x,i)=>{
+  const isMe=!!x.me;
+  const canMsg=!isMe&&x.tg;
+  const btn=isMe
+   ?`<span class="tag">вы</span>`
+   :`<button class="btn sm ${S.bal<MSG_COST?'ghost':''}" ${S.bal<MSG_COST&&canMsg?'disabled':''} onclick="msgPlayer('${(x.tg||'').replace(/'/g,"\\'")}','${x.n.replace(/'/g,"\\'")}')">Написать</button>`;
+  return `<div class="item" ${isMe?'style="border-color:var(--gold)"':''}>
+   <div class="ic" style="font-family:var(--fd);font-size:14px">${i+1}</div>
+   <div class="info"><b>${x.n}</b><small>${x.tg?'@'+x.tg:'нет Telegram'} · ${fmt(x.e)} VIC</small></div>
+   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+    <b style="font-family:var(--fd);font-weight:500;font-size:13px">${fmt(x.e)}</b>
+    ${btn}
+   </div>
+  </div>`;
+ }).join('');
+ updTap();
+}
+function msgPlayer(tg,name){
+ const COST=500000;
+ if(!tg)return toast('У игрока нет Telegram');
+ if(S.bal<COST)return toast('Нужно '+fmt(COST)+' VIC');
+ S.bal-=COST;save();render();
+ toast('−'+fmt(COST)+' VIC · пиши @'+tg);
+ const url='https://t.me/'+tg;
+ const w=window.Telegram&&window.Telegram.WebApp;
+ if(w&&w.openTelegramLink){try{w.openTelegramLink(url);return}catch(e){}}
+ window.open(url,'_blank');
+}
+window.msgPlayer=msgPlayer;
+
+$('copy').onclick=()=>{navigator.clipboard?navigator.clipboard.writeText($('ref').textContent).then(()=>toast('Ссылка скопирована'),()=>toast('Скопируйте ссылку вручную')):toast('Скопируйте ссылку вручную')};
+$('capUp').onclick=()=>{const c=capCost();if(S.bal<c)return toast('Не хватает VIC');S.bal-=c;S.cl=(S.cl||0)+1;save();render();toast('Хранилище: '+capH()+' ч')};
+
+// ===== МАГАЗИН =====
+Object.assign(IC,{clock:'<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2"/>',box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>',bot:'<path d="M6 8h12v10H6zM12 4v4M9 13h.01M15 13h.01M9 16h6"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'});
+const G=k=>({en:S.enLv,tap:S.tapLv,auto:S.auto,mul:S.mulLv})[k]??(S.ul[k]||0);
+const addL=k=>{if(k==='en')S.enLv++;else if(k==='tap')S.tapLv++;else if(k==='auto')S.auto++;else if(k==='mul')S.mulLv++;else S.ul[k]=(S.ul[k]||0)+1};
+const mulBy=x=>{settle();S.mul=+(S.mul*x).toFixed(4)};
+function perks(){CFG.growth=Math.max(1.05,+(1.15-0.01*(S.ul.disc||0)).toFixed(2));CFG.lvlBonus=+(0.25+0.05*(S.ul.master||0)).toFixed(2);CFG.upMul=Math.max(0.2,+(0.6-0.04*(S.ul.sale||0)).toFixed(2))}
+perks();
+
+// Постоянные улучшения: b = стартовая цена, g = во сколько раз дорожает после КАЖДОЙ покупки
+const UP=[
+{id:'en',n:'Запас энергии',ic:'energy',b:1e6,g:1.35,d:()=>'+1000 макс. энергии (сейчас '+fmt(S.maxEn)+')',do:()=>{S.maxEn+=1000}},
+{id:'tap',n:'Сила тапа',ic:'star',b:3e6,g:1.5,d:()=>'Тап ×1.5 (сейчас '+fmt(S.tap)+' VIC)',do:()=>{S.tap=Math.ceil(S.tap*1.5)}},
+{id:'auto',n:'Помощник',ic:'bot',b:1.5e6,g:1.4,d:()=>'Тапает сам раз в секунду. Сейчас: '+G('auto')+' · '+fmt(G('auto')*S.tap)+' VIC/с',do:()=>{}},
+{id:'ads',n:'Реклама',ic:'chan',b:5e6,g:1.4,d:()=>'Доход ×1.10',do:()=>mulBy(1.1)},
+{id:'mul',n:'Множитель дохода',ic:'empire',b:1e7,g:1.6,d:()=>'Доход ×1.25 (сейчас ×'+S.mul.toFixed(2)+')',do:()=>mulBy(1.25)},
+{id:'fran',n:'Франшиза',ic:'shop',b:5e8,g:2,d:()=>'Доход ×1.5',do:()=>mulBy(1.5)},
+{id:'lobby',n:'Лобби',ic:'bank',b:5e10,g:3,d:()=>'Доход ×2',do:()=>mulBy(2)},
+{id:'disc',n:'Оптимизация цен',ic:'tech',b:3e7,g:1.8,max:10,d:()=>'Предприятия дорожают медленнее: −1% (сейчас +'+Math.round((CFG.growth-1)*100)+'% за копию)',do:()=>perks()},
+{id:'sale',n:'Бизнес-школа',ic:'tech',b:4e7,g:1.8,max:10,d:()=>'Улучшение предприятий дешевле на 4% (сейчас множитель цены ×'+CFG.upMul.toFixed(2)+')',do:()=>perks()},
+{id:'dep',n:'Банковский вклад',ic:'bank',b:1e8,g:1.8,max:10,d:()=>'Проценты на баланс: '+((S.ul.dep||0)*0.036).toFixed(3)+'% в час, пока игра открыта',do:()=>{}},
+{id:'master',n:'Мастерство',ic:'fact',b:2e7,g:1.7,max:10,d:()=>'Бонус за уровень предприятия +5% (сейчас +'+Math.round(CFG.lvlBonus*100)+'%)',do:()=>{settle();perks()}}];
+const upCostS=u=>Math.round(u.b*Math.pow(u.g,G(u.id)));
+
+// Разовые мега-бусты
+const ONCE=[
+{id:'mega',n:'МЕГА-БУСТ ×2',ic:'empire',b:5e10,k:2},
+{id:'hyper',n:'ГИПЕР-БУСТ ×3',ic:'space',b:5e12,k:3},
+{id:'omega',n:'ОМЕГА-БУСТ ×5',ic:'empire',b:5e14,k:5},
+{id:'sigma',n:'СИГМА-БУСТ ×10',ic:'space',b:5e16,k:10}];
+const onceOwn=o=>o.id==='mega'?S.mega:S.ul[o.id];
+
+// Пропуски времени (за VIC)
+const SKIP=[
+{id:'s1',n:'Пропуск 1 час',h:1,mul:0.9,stars:15},
+{id:'s5',n:'Пропуск 5 часов',h:5,mul:0.85,stars:49},
+{id:'s10',n:'Пропуск 10 часов',h:10,mul:0.8,stars:89}];
+const skipCost=s=>Math.max(5000,Math.round(hourly()*s.h*s.mul));
+
+// Пакеты VIC за Telegram Stars (оплата через бота)
+const STAR_PACKS=[
+{id:'st1',n:'Пакет 50 000 VIC',vic:5e4,stars:25},
+{id:'st2',n:'Пакет 250 000 VIC',vic:25e4,stars:99},
+{id:'st3',n:'Пакет 1 000 000 VIC',vic:1e6,stars:299},
+{id:'st4',n:'Пакет 5 000 000 VIC',vic:5e6,stars:999}];
+
+// Предметы: цена зависит от дохода и дорожает на g% после каждой покупки
+const CN=[
+{id:'refill',n:'Полная зарядка',ic:'energy',g:1.15,base:()=>Math.max(1e5,S.tap*500),d:()=>'Мгновенно восстанавливает всю энергию.',pre:()=>curEn()>=S.maxEn?'Энергия уже полная':'',use:()=>{S.en=S.maxEn;S.enT=Date.now();return 'Энергия полная'}},
+{id:'fr1',n:'Тап-лихорадка ×5 (1 мин)',ic:'star',g:1.1,base:()=>Math.max(3e5,S.tap*3000),d:()=>'Тап приносит ×5 на 60 секунд.',use:()=>{S.tu=Math.max(Date.now(),S.tu||0)+6e4;return 'Тап ×5 на 1 минуту!'}},
+{id:'fr5',n:'Тап-лихорадка ×5 (5 мин)',ic:'star',g:1.1,base:()=>Math.max(1.2e6,S.tap*12000),d:()=>'Тап приносит ×5 на 5 минут.',use:()=>{S.tu=Math.max(Date.now(),S.tu||0)+3e5;return 'Тап ×5 на 5 минут!'}},
+{id:'w2',n:'Мини-перемотка',ic:'clock',g:1.08,base:()=>Math.max(2e4,hourly()*0.8),d:()=>'Сразу даёт доход за 2 часа (+'+fmt(hourly()*2)+').',pre:()=>hourly()?'':'Сначала купите предприятие',use:()=>{const a=Math.round(hourly()*2);S.bal+=a;S.earned+=a;return 'Перемотка: +'+fmt(a)+' VIC'}},
+{id:'w8',n:'Машина времени',ic:'clock',g:1.08,base:()=>Math.max(1e5,hourly()*3),d:()=>'Сразу даёт доход за 8 часов (+'+fmt(hourly()*8)+').',pre:()=>hourly()?'':'Сначала купите предприятие',use:()=>{const a=Math.round(hourly()*8);S.bal+=a;S.earned+=a;return 'Машина времени: +'+fmt(a)+' VIC'}},
+{id:'w48',n:'Квантовый скачок',ic:'space',g:1.08,base:()=>Math.max(1e6,hourly()*20),d:()=>'Сразу даёт доход за 48 часов (+'+fmt(hourly()*48)+').',pre:()=>hourly()?'':'Сначала купите предприятие',use:()=>{const a=Math.round(hourly()*48);S.bal+=a;S.earned+=a;return 'Скачок: +'+fmt(a)+' VIC'}},
+{id:'mini',n:'Мини-зарядка',ic:'energy',g:1.12,base:()=>Math.max(4e4,S.tap*200),d:()=>'Восстанавливает 30% энергии.',pre:()=>curEn()>=S.maxEn?'Энергия уже полная':'',use:()=>{S.en=Math.min(S.maxEn,curEn()+S.maxEn*0.3);S.enT=Date.now();return '+30% энергии'}},
+{id:'pack',n:'Золотой тап-пакет',ic:'star',g:1.1,base:()=>Math.max(2e5,S.tap*400),d:()=>'Сразу даёт 1000 тапов: +'+fmt(S.tap*1000)+' VIC.',use:()=>{const a=S.tap*1000;S.bal+=a;S.earned+=a;return 'Тап-пакет: +'+fmt(a)+' VIC'}},
+{id:'w168',n:'Недельный скачок',ic:'space',g:1.08,base:()=>Math.max(1e7,hourly()*60),d:()=>'Сразу даёт доход за 7 дней (+'+fmt(hourly()*168)+').',pre:()=>hourly()?'':'Сначала купите предприятие',use:()=>{const a=Math.round(hourly()*168);S.bal+=a;S.earned+=a;return 'Недельный скачок: +'+fmt(a)+' VIC'}},
+{id:'lotto',n:'Лотерейный билет',ic:'gift',g:1.05,base:()=>Math.max(1e3,hourly()*0.3),d:()=>'85% пусто, 12% ×2, 2.5% ×10, 0.5% ×50.',use:c=>{const r=Math.random();const [m,t]=r<.85?[0,'Пусто']:r<.97?[2,'Выигрыш ×2']:r<.995?[10,'Выигрыш ×10!']:[50,'ДЖЕКПОТ ×50!!!'];const a=Math.round(c*m);S.bal+=a;S.earned+=a;return 'Билет: '+t+(a?' +'+fmt(a)+' VIC':'')}},
+{id:'chest',n:'Сундук удачи',ic:'box',g:1.08,base:()=>Math.max(5e3,hourly()*2),d:()=>'Риск! Награда от 30% до 1000% цены.',use:c=>chest(c)},
+{id:'royal',n:'Королевский сундук',ic:'box',g:1.08,base:()=>Math.max(5e4,hourly()*20),d:()=>'Тот же риск, но суммы в 10 раз больше.',use:c=>chest(c)}];
+function chest(c){const r=Math.random();const [m,t]=r<.6?[.3,'Почти пусто']:r<.88?[1,'Вернули своё']:r<.98?[3,'Удача!']:[10,'ДЖЕКПОТ!'];const a=Math.round(c*m);S.bal+=a;S.earned+=a;return 'Сундук: '+t+' +'+fmt(a)+' VIC'}
+const cnCost=u=>Math.round(u.base()*Math.pow(u.g,S.cn[u.id]||0));
+
+const SK=[
+{id:'gold',n:'Классика',c:0,a:'#d4a84b',b:'#f1d58a'},
+{id:'bronze',n:'Бронза',c:5e4,a:'#cd7f32',b:'#f0c590'},
+{id:'ruby',n:'Рубин',c:3e5,a:'#e0556b',b:'#ffb3bf'},
+{id:'ice',n:'Лёд',c:1e6,a:'#7fd6ff',b:'#d9f3ff'},
+{id:'emerald',n:'Изумруд',c:3e6,a:'#3ec28f',b:'#a8f0d0'},
+{id:'lava',n:'Лава',c:1e7,a:'#ff5a1f',b:'#ffc29a'},
+{id:'ocean',n:'Океан',c:2e7,a:'#2f8cff',b:'#b8d8ff'},
+{id:'neon',n:'Неон',c:3e7,a:'#b45cff',b:'#e3c2ff'},
+{id:'sakura',n:'Сакура',c:1e8,a:'#ff8fb8',b:'#ffd9e8'},
+{id:'sunset',n:'Закат',c:3e8,a:'#ff9f45',b:'#ffe0b8'},
+{id:'blood',n:'Кровавая луна',c:6e8,a:'#c4122f',b:'#ff9aa9'},
+{id:'diamond',n:'Алмаз',c:1e9,a:'#5cc8ff',b:'#c9efff'},
+{id:'toxic',n:'Токсик',c:5e9,a:'#a6ff1f',b:'#e4ffb0'},
+{id:'cosmos',n:'Космос',c:4e10,a:'#ff6ec7',b:'#ffd0ef'},
+{id:'aurora',n:'Аврора',c:5e10,a:'#4dffd2',b:'#c8fff0'},
+{id:'plat',n:'Платина',c:2e11,a:'#c9d1dc',b:'#ffffff'},
+{id:'dark',n:'Тёмная материя',c:1e12,a:'#7a5cff',b:'#cfc4ff'}];
+const TT=[
+{n:'Предприниматель',c:0},{n:'Торговец',c:1e5},{n:'Бизнесмен',c:1e6},{n:'Магнат',c:1e8},{n:'Акула бизнеса',c:1e9},{n:'Олигарх',c:1e10},{n:'Владыка рынка',c:1e12},{n:'Легенда',c:1e13},{n:'Император VIC',c:1e14},{n:'Бог экономики',c:1e15}];
+function applySkin(){const k=SK.find(x=>x.id===S.skin)||SK[0],r=document.documentElement.style;r.setProperty('--gold',k.a);r.setProperty('--gold2',k.b);$('uname').textContent=S.title}
+
+function buySkip(id){
+ const s=SKIP.find(x=>x.id===id);if(!s)return;
+ if(!hourly())return toast('Сначала купите предприятие');
+ const c=skipCost(s);if(S.bal<c)return toast('Не хватает VIC');
+ S.bal-=c;const a=Math.round(hourly()*s.h);S.bal+=a;S.earned+=a;S.last=Date.now();
+ save();render();toast('Пропуск '+s.h+' ч: +'+fmt(a)+' VIC');
+}
+function buyStars(id){
+ const p=STAR_PACKS.find(x=>x.id===id);
+ const sk=SKIP.find(x=>'st_skip_'+x.h===id);
+ const stars=p?p.stars:(sk?sk.stars:0);
+ const label=p?p.n:(sk?sk.n:'пакет');
+ // Подарок Stars на личный аккаунт владельца (начисление вручную)
+ const OWNER_TG='https://t.me/vife_kkin'; // <-- замени на свой username без @
+ const tg=window.Telegram&&window.Telegram.WebApp;
+ toast('Отправь подарок ★'+stars+' («'+label+'») на аккаунт владельца');
+ if(tg&&tg.openTelegramLink){
+  try{tg.openTelegramLink(OWNER_TG);return}catch(e){}
+ }
+ window.open(OWNER_TG,'_blank');
+}
+function buyShop(t){
+ const [kind,id]=t.split(':');
+ if(kind==='skip')return buySkip(id);
+ if(kind==='stars')return buyStars(id);
+ if(kind==='skin'){const k=SK.find(x=>x.id===id);
+  if(!S.skins[id]){if(S.bal<k.c)return toast('Не хватает VIC');S.bal-=k.c;S.skins[id]=1}
+  S.skin=id;applySkin();save();render();return toast('Скин: '+k.n)}
+ if(kind==='title'){const k=TT.find(x=>x.n===id);
+  if(!S.titles[id]&&k.c){if(S.bal<k.c)return toast('Не хватает VIC');S.bal-=k.c;S.titles[id]=1}
+  S.title=id;applySkin();save();render();return toast('Титул: '+id)}
+ if(kind==='up'){const u=UP.find(x=>x.id===id),c=upCostS(u);
+  if(u.max&&G(id)>=u.max)return toast('Максимальный уровень');
+  if(S.bal<c)return toast('Не хватает VIC');S.bal-=c;addL(id);u.do();save();render();return toast(u.n+': ур. '+G(id))}
+ if(kind==='once'){const o=ONCE.find(x=>x.id===id);if(onceOwn(o))return;
+  if(S.bal<o.b)return toast('Не хватает VIC');S.bal-=o.b;settle();if(id==='mega')S.mega=1;else S.ul[id]=1;S.mul=+(S.mul*o.k).toFixed(4);save();render();return toast(o.n+'! Доход ×'+S.mul.toFixed(2))}
+ if(kind==='cn'){const u=CN.find(x=>x.id===id),c=cnCost(u);
+  const e=u.pre?u.pre():'';if(e)return toast(e);
+  if(S.bal<c)return toast('Не хватает VIC');S.bal-=c;S.cn[id]=(S.cn[id]||0)+1;const m=u.use(c);save();render();return toast(m)}
+}
+let _sh='';
+function renderShop(){
+ const row=(ic,n,d,btn)=>`<div class="item"><div class="ic">${ico(ic)}</div><div class="info"><b>${n}</b><small>${d}</small></div>${btn}</div>`;
+ const B=(t,c)=>`<button class="btn sm" ${S.bal<c?'disabled':''} onclick="buyShop('${t}')">${fmt(c)}</button>`;
+ const left=Math.max(0,Math.ceil(((S.tu||0)-Date.now())/1000));
+ let h='';
+ // Пропуски времени
+ h+='<div class="sec">Пропуск времени</div>';
+ h+=SKIP.map(s=>{
+  const c=skipCost(s),gain=Math.round(hourly()*s.h);
+  return row('clock',s.n,'Сразу доход за '+s.h+' ч'+(hourly()?' (+'+fmt(gain)+' VIC)':'')+'. Можно за VIC или ★'+s.stars,
+   `<div style="display:flex;flex-direction:column;gap:6px"><button class="btn sm" ${(!hourly()||S.bal<c)?'disabled':''} onclick="buyShop('skip:${s.id}')">${fmt(c)}</button><button class="btn sm ghost" onclick="buyShop('stars:st_skip_${s.h}')">★${s.stars}</button></div>`);
+ }).join('');
+ // VIC за Stars
+ h+='<div class="sec">VIC за Telegram Stars</div>';
+ h+=STAR_PACKS.map(p=>row('star',p.n,'Мгновенно на баланс. Оплата звёздами Telegram.',
+  `<button class="btn sm" onclick="buyShop('stars:${p.id}')">★ ${p.stars}</button>`)).join('');
+ // Предметы
+ h+='<div class="sec">Предметы</div>';
+ h+=CN.map(u=>row(u.ic,u.n+((u.id==='fr1'||u.id==='fr5')&&left?' <span class="tag">ещё '+left+' с</span>':''),u.d()+' · куплено '+(S.cn[u.id]||0),B('cn:'+u.id,cnCost(u)))).join('');
+ h+='<div class="sec">Постоянные улучшения</div>';
+ h+=UP.map(u=>{const lv=G(u.id),mx=u.max&&lv>=u.max;
+  return row(u.ic,u.n,u.d()+' · ур. '+lv+(u.max?'/'+u.max:''),mx?'<button class="btn sm ghost" disabled>МАКС</button>':B('up:'+u.id,upCostS(u)))}).join('');
+ h+='<div class="sec">Мега-бусты (один раз)</div>';
+ h+=ONCE.map(o=>row(o.ic,o.n,'Доход ×'+o.k+' навсегда.',onceOwn(o)?'<button class="btn sm ghost" disabled>Куплено</button>':B('once:'+o.id,o.b))).join('');
+ h+='<div class="sec">Скины</div>';
+ h+=SK.map(k=>{const own=S.skins[k.id],on=S.skin===k.id;
+  const btn=on?'<button class="btn sm ghost" disabled>Надето</button>':own?`<button class="btn sm ghost" onclick="buyShop('skin:${k.id}')">Надеть</button>`:B('skin:'+k.id,k.c);
+  return `<div class="item"><div class="sw" style="background:radial-gradient(circle at 35% 30%,${k.b},${k.a} 60%,#111);border-color:${k.a}"></div><div class="info"><b>${k.n}</b><small>Цвет монеты и интерфейса.</small></div>${btn}</div>`}).join('');
+ h+='<div class="sec">Титулы</div>';
+ h+=TT.map(k=>{const own=S.titles[k.n]||!k.c,on=S.title===k.n;
+  const btn=on?'<button class="btn sm ghost" disabled>Выбран</button>':own?`<button class="btn sm ghost" onclick="buyShop('title:${k.n}')">Выбрать</button>`:B('title:'+k.n,k.c);
+  return row('empire',k.n,'В шапке вместо имени.',btn)}).join('');
+ if(h!==_sh){_sh=h;$('shop').innerHTML=h}
+}
+applySkin();
+setInterval(()=>{if(S.ul.dep){const v=S.bal*S.ul.dep*1e-7;S.bal+=v;S.earned+=v;$('bal').textContent=fmt(S.bal)}
+ if(S.auto){const v=S.auto*tapVal();S.bal+=v;S.earned+=v;$('bal').textContent=fmt(S.bal);$('earned').textContent=fmt(S.earned);save()}
+ if(document.getElementById('p-shop').classList.contains('on'))renderShop()},1000);
+
+const _r=render;render=function(){_r();renderX();renderShop();$('capUp').textContent='Увеличить хранилище до '+(capH()+2)+' ч · '+fmt(capCost())+' VIC';$('capUp').disabled=S.bal<capCost()};
+
+// ===== Telegram Mini App =====
+(function initTg(){
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if(!tg) return;
+  document.body.classList.add('tg');
+  tg.ready();
+  tg.expand();
+  try{ tg.disableVerticalSwipes && tg.disableVerticalSwipes(); }catch(e){}
+  try{ tg.setHeaderColor && tg.setHeaderColor('#070707'); }catch(e){}
+  try{ tg.setBackgroundColor && tg.setBackgroundColor('#070707'); }catch(e){}
+  const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if(u){
+    const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Игрок';
+    S.uid = String(u.id);
+    if(!S.title || S.title === 'Предприниматель') S.title = name;
+    $('uname').textContent = S.title;
+    if(u.username) S.tgUser = u.username;
+    save();
+  }
+  // Реферальная ссылка через startapp / start_param
+  const start = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
+  if(start && start.startsWith('ref_') && !S.refDone){
+    // Бонус за реферала будет начисляться на сервере. Здесь только пометка.
+    S.refFrom = start.slice(4);
+    S.refDone = 1;
+    save();
+  }
+})();
+
+// Глобальные функции для onclick в HTML
+window.go=go;window.buy=buy;window.up=up;window.claimDaily=claimDaily;
+window.openSp=openSp;window.chkSp=chkSp;window.claimG=claimG;
+window.buyShop=buyShop;window.buySkip=buySkip;window.buyStars=buyStars;
+
+try{
+  go('home');
+  setInterval(tick,1000);
+  setInterval(updTap,1000);
+}catch(e){console.error('init',e);alert('Ошибка запуска: '+e.message)}
+</script>
+</body>
+</html>
